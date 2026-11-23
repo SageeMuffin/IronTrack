@@ -1,0 +1,26 @@
+# Gradle / build
+.gradle/
+build/
+**/build/
+local.properties
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Signature : ne JAMAIS versionner les clés ni les mots de passe
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
+signing.properties
+release-keys/
+*.apk
+*.aab
+*.sha256
