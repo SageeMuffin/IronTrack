@@ -1,11 +1,12 @@
 # Publie un APK de TEST (version de développement « IronTrack Debug ») dans une préversion GitHub nommée TEST.
-# Déclenché par le tag TEST, ou manuellement depuis l'onglet Actions.
+# Déclenché par le tag TEST, par un push sur la branche de développement, ou manuellement depuis l'onglet Actions.
 # La préversion est ignorée par la recherche de mises à jour intégrée (seules les versions vX.Y.Z stables comptent).
 name: APK de test
 
 on:
   push:
     tags: ["TEST"]
+    branches: ["claude/project-thread-f9q4sr"]
   workflow_dispatch:
 
 permissions:
@@ -58,5 +59,5 @@ jobs:
             gh release edit TEST --notes "$notes" --repo "$GITHUB_REPOSITORY"
           else
             gh release create TEST dist/IronTrack-TEST.apk dist/IronTrack-TEST.apk.sha256 \
-              --repo "$GITHUB_REPOSITORY" --title "TEST" --notes "$notes" --prerelease --verify-tag
+              --repo "$GITHUB_REPOSITORY" --title "TEST" --notes "$notes" --prerelease --target "$GITHUB_SHA"
           fi
