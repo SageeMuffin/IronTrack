@@ -38,6 +38,10 @@ jobs:
       - name: Compiler l'APK de développement
         run: ./gradlew --no-daemon --stacktrace :app:assembleDebug
 
+      # Vérifie que la minification R8 de la version de production passe (APK non signé, jamais publié).
+      - name: Vérifier la compilation de production (R8)
+        run: ./gradlew --no-daemon --stacktrace :app:assembleRelease
+
       - name: Publier l'APK de développement (artefact CI)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
