@@ -1,0 +1,62 @@
+# Publie un APK de TEST (version de développement « IronTrack Debug ») dans une préversion GitHub nommée TEST.
+# Déclenché par le tag TEST, ou manuellement depuis l'onglet Actions.
+# La préversion est ignorée par la recherche de mises à jour intégrée (seules les versions vX.Y.Z stables comptent).
+name: APK de test
+
+on:
+  push:
+    tags: ["TEST"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-apk
+  cancel-in-progress: true
+
+jobs:
+  test-apk:
+    name: Publier l'APK de test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write # création / mise à jour de la préversion TEST
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Installer le JDK 17
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurer Gradle
+        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4.4.1
+
+      - name: Compiler l'APK de test
+        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug
+
+      - name: Préparer les fichiers
+        run: |
+          src="$(ls app/build/outputs/apk/debug/*.apk | head -1)"
+          mkdir -p dist
+          cp "$src" dist/IronTrack-TEST.apk
+          (cd dist && sha256sum IronTrack-TEST.apk > IronTrack-TEST.apk.sha256)
+          cat dist/IronTrack-TEST.apk.sha256
+
+      - name: Publier dans la préversion TEST
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="APK de test (IronTrack Debug, signé avec une clé de développement). Il s'installe à côté de la version officielle et n'est pas une version de production. Compilé depuis ${GITHUB_SHA}."
+          if gh release view TEST --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload TEST dist/IronTrack-TEST.apk dist/IronTrack-TEST.apk.sha256 --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit TEST --notes "$notes" --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create TEST dist/IronTrack-TEST.apk dist/IronTrack-TEST.apk.sha256 \
+              --repo "$GITHUB_REPOSITORY" --title "TEST" --notes "$notes" --prerelease --verify-tag
+          fi
