@@ -1,0 +1,154 @@
+# Publication d'une version signée sur GitHub Releases, déclenchée par un tag vX.Y.Z.
+#
+# Secrets requis (Settings > Secrets and variables > Actions) :
+#   ANDROID_KEYSTORE_BASE64   keystore de production encodé en base64
+#   ANDROID_KEYSTORE_PASSWORD mot de passe du keystore
+#   ANDROID_KEY_ALIAS         alias de la clé
+#   ANDROID_KEY_PASSWORD      mot de passe de la clé
+#
+# Le keystore n'est jamais écrit dans le dépôt : il est décodé dans un dossier temporaire du runner,
+# puis supprimé à la fin du job. Aucun APK non signé ne peut être publié.
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: APK signé et GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write # nécessaire uniquement pour créer la Release
+    steps:
+      - name: Vérifier le format du tag
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^v([0-9]{1,3})\.([0-9]{1,2})\.([0-9]{1,2})$ ]]; then
+            echo "::error::Tag « $TAG » invalide : format attendu vX.Y.Z (ex. v1.0.0, chaque partie ≤ 99 pour mineur/correctif)."
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Vérifier qu'aucune release n'existe déjà pour ce tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::La release $TAG existe déjà. Créez un nouveau tag avec un numéro de version supérieur."
+            exit 1
+          fi
+
+      - name: Vérifier la présence des secrets de signature
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          missing=""
+          [ -z "$KS_B64" ] && missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -z "$KS_PASS" ] && missing="$missing ANDROID_KEYSTORE_PASSWORD"
+          [ -z "$KEY_ALIAS" ] && missing="$missing ANDROID_KEY_ALIAS"
+          [ -z "$KEY_PASS" ] && missing="$missing ANDROID_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Secrets GitHub manquants :$missing. Consultez la section « Publier une version » du README."
+            exit 1
+          fi
+
+      - name: Récupérer le code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Installer le JDK 17
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurer Gradle
+        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4.4.1
+        with:
+          cache-read-only: true
+
+      - name: Restaurer le keystore (hors du dépôt)
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          dir="$RUNNER_TEMP/signing"
+          mkdir -p "$dir" && chmod 700 "$dir"
+          printf '%s' "$KS_B64" | base64 --decode > "$dir/release.jks"
+          chmod 600 "$dir/release.jks"
+          if [ ! -s "$dir/release.jks" ]; then
+            echo "::error::Le keystore décodé est vide : vérifiez ANDROID_KEYSTORE_BASE64."
+            exit 1
+          fi
+          echo "ANDROID_KEYSTORE_PATH=$dir/release.jks" >> "$GITHUB_ENV"
+
+      - name: Tests unitaires
+        run: ./gradlew --no-daemon :core:test :app:testReleaseUnitTest -PreleaseVersion=${{ steps.version.outputs.version }}
+
+      - name: Compiler l'APK de production signé
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon :app:assembleRelease -PreleaseVersion=${{ steps.version.outputs.version }}
+
+      - name: Vérifier la signature et préparer les fichiers
+        id: apk
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          src="app/build/outputs/apk/release/app-release.apk"
+          if [ ! -f "$src" ]; then
+            echo "::error::APK signé introuvable ($src). Un APK non signé (app-release-unsigned.apk) n'est jamais publié."
+            ls -la app/build/outputs/apk/release/ || true
+            exit 1
+          fi
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
+          if ! "$apksigner" verify --verbose --print-certs "$src" > verify.txt; then
+            echo "::error::La vérification de signature de l'APK a échoué."
+            exit 1
+          fi
+          grep -E "Verified using v[23] scheme.*true" verify.txt || { echo "::error::APK non signé avec le schéma v2/v3."; exit 1; }
+          grep -E "Signer #1 certificate SHA-256" verify.txt || true
+          mkdir -p dist
+          out="dist/IronTrack-v${VERSION}.apk"
+          cp "$src" "$out"
+          (cd dist && sha256sum "IronTrack-v${VERSION}.apk" > "IronTrack-v${VERSION}.apk.sha256")
+          cat "dist/IronTrack-v${VERSION}.apk.sha256"
+          echo "apk=$out" >> "$GITHUB_OUTPUT"
+          echo "sha=dist/IronTrack-v${VERSION}.apk.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Créer la GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          APK: ${{ steps.apk.outputs.apk }}
+          SHA: ${{ steps.apk.outputs.sha }}
+        run: |
+          notes="$(git -c safe.directory='*' tag -l --format='%(contents)' "$TAG" 2>/dev/null || true)"
+          [ -z "$notes" ] && notes="IronTrack $TAG"
+          printf '%s\n\nSHA-256 : `%s`\n' "$notes" "$(cut -d' ' -f1 "$SHA")" > notes.md
+          gh release create "$TAG" "$APK" "$SHA" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "IronTrack $TAG" \
+            --notes-file notes.md \
+            --verify-tag
+
+      - name: Supprimer le keystore
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/signing"
