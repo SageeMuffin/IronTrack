@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Toutes les chaînes visibles par l'utilisateur sont centralisées ici (application entièrement en français). -->
+<resources>
+    <string name="app_title" translatable="false">IronTrack</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_programs">Programmes</string>
+    <string name="nav_calendar">Calendrier</string>
+    <string name="nav_stats">Performances</string>
+    <string name="nav_settings">Paramètres</string>
+
+    <!-- Actions communes -->
+    <string name="action_back">Retour</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_close">Fermer</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_validate">Valider</string>
+    <string name="action_clear_value">Effacer</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_remove">Retirer</string>
+    <string name="action_rename">Renommer</string>
+    <string name="action_duplicate">Dupliquer</string>
+    <string name="action_more">Plus d\'options</string>
+    <string name="action_ok">OK</string>
+    <string name="action_next">Suivant</string>
+    <string name="action_retry">Réessayer</string>
+    <string name="action_continue">Continuer</string>
+    <string name="action_view">Voir</string>
+    <string name="previous">Précédent</string>
+    <string name="next">Suivant</string>
+    <string name="not_set">Non renseigné</string>
+    <string name="unknown">Inconnue</string>
+    <string name="never">Jamais</string>
+
+    <!-- Semaines / jours -->
+    <string name="week_a">Semaine A</string>
+    <string name="week_b">Semaine B</string>
+    <string name="rest_day">Repos</string>
+    <string name="not_scheduled">Non planifiée</string>
+    <string name="week_range">Du %1$s au %2$s</string>
+    <string-array name="weekdays">
+        <item>Lundi</item>
+        <item>Mardi</item>
+        <item>Mercredi</item>
+        <item>Jeudi</item>
+        <item>Vendredi</item>
+        <item>Samedi</item>
+        <item>Dimanche</item>
+    </string-array>
+    <string-array name="weekdays_short">
+        <item>Lun</item>
+        <item>Mar</item>
+        <item>Mer</item>
+        <item>Jeu</item>
+        <item>Ven</item>
+        <item>Sam</item>
+        <item>Dim</item>
+    </string-array>
+
+    <!-- Statuts -->
+    <string name="status_completed">Terminé</string>
+    <string name="status_partial">Partiellement effectué</string>
+    <string name="status_not_done">Non effectué</string>
+    <string name="status_missed">Manquée</string>
+    <string name="status_in_progress">En cours</string>
+    <string name="status_today">Aujourd\'hui</string>
+    <string name="status_upcoming">À venir</string>
+
+    <!-- Unités et formats -->
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="unit_kg_long">Kilogrammes (kg)</string>
+    <string name="unit_lb_long">Livres (lb)</string>
+    <string name="unit_reps">rép.</string>
+    <string name="unit_rir">RIR</string>
+    <string name="fmt_reps">%1$s rép.</string>
+    <string name="fmt_rir">RIR %1$s</string>
+    <string name="fmt_rpe">RPE %1$s</string>
+    <string name="fmt_rest">Repos %1$s</string>
+    <string name="label_min">Min</string>
+    <string name="label_max_optional">Max (facultatif)</string>
+    <plurals name="sets_count">
+        <item quantity="one">%1$d série</item>
+        <item quantity="many">%1$d séries</item>
+        <item quantity="other">%1$d séries</item>
+    </plurals>
+    <plurals name="exercises_count">
+        <item quantity="one">%1$d exercice</item>
+        <item quantity="many">%1$d exercices</item>
+        <item quantity="other">%1$d exercices</item>
+    </plurals>
+    <plurals name="sessions_count">
+        <item quantity="one">%1$d séance</item>
+        <item quantity="many">%1$d séances</item>
+        <item quantity="other">%1$d séances</item>
+    </plurals>
+    <plurals name="completed_sets_count">
+        <item quantity="one">%1$d série validée</item>
+        <item quantity="many">%1$d séries validées</item>
+        <item quantity="other">%1$d séries validées</item>
+    </plurals>
+
+    <!-- RIR / RPE -->
+    <string-array name="rir_meanings">
+        <item>Échec musculaire</item>
+        <item>Une répétition supplémentaire possible</item>
+        <item>Deux répétitions supplémentaires possibles</item>
+        <item>Trois répétitions supplémentaires possibles</item>
+        <item>Quatre répétitions supplémentaires possibles</item>
+        <item>Cinq répétitions supplémentaires ou plus</item>
+        <item>Six répétitions supplémentaires ou plus</item>
+        <item>Sept répétitions supplémentaires ou plus</item>
+        <item>Huit répétitions supplémentaires ou plus</item>
+        <item>Neuf répétitions supplémentaires ou plus</item>
+        <item>Dix répétitions supplémentaires ou plus</item>
+    </string-array>
+    <string name="rir_help_title">Qu\'est-ce que le RIR ?</string>
+    <string name="rir_help_text">Le RIR (Reps In Reserve, « répétitions en réserve ») est le nombre de répétitions supplémentaires que vous auriez encore pu faire avant l\'échec musculaire.</string>
+    <string name="rpe_help_text">Le RPE (effort perçu, de 1 à 10) est conservé tel quel lors d\'un import. La correspondance indicative utilisée est : RIR ≈ 10 − RPE.</string>
+    <string name="rpe_explanation">Correspondance indicative : RIR ≈ %1$s</string>
+    <string name="rpe_original_value">RPE %1$s (valeur d\'origine) · ≈ RIR %2$s, converti</string>
+
+    <!-- Accueil -->
+    <string name="home_today">Séance du jour</string>
+    <string name="home_in_progress">Séance en cours</string>
+    <string name="action_resume_workout">Reprendre la séance</string>
+    <string name="home_no_program_title">Aucun programme actif</string>
+    <string name="home_no_program_message">Créez ou importez un programme, puis activez-le pour générer votre calendrier.</string>
+    <string name="action_create_program">Créer un programme</string>
+    <string name="home_rest_day">Jour de repos</string>
+    <string name="home_rest_day_message">Aucune séance prévue aujourd\'hui.</string>
+    <string name="home_next_workout">Prochaine séance</string>
+    <string name="home_week_progress">Progression de la semaine</string>
+    <string name="home_week_progress_value">%1$d séance(s) effectuée(s) sur %2$d</string>
+    <string name="home_my_program">Mon programme</string>
+    <string name="home_history">Historique</string>
+    <string name="home_already_in_progress_title">Séance déjà en cours</string>
+    <string name="home_already_in_progress_message">Une autre séance est en cours. Voulez-vous quand même commencer celle-ci ?</string>
+    <string name="action_start_anyway">Commencer quand même</string>
+    <string name="action_start_workout">Commencer la séance</string>
+    <string name="action_view_workout">Voir la séance</string>
+    <string name="estimated_duration_value">Estimée : %1$s</string>
+
+    <!-- Programmes -->
+    <string name="action_new_program">Nouveau programme</string>
+    <string name="program_name">Nom du programme</string>
+    <string name="copy_of">Copie de %1$s</string>
+    <string name="programs_empty_title">Aucun programme</string>
+    <string name="programs_empty_message">Créez votre premier programme ou importez-en un depuis un document.</string>
+    <string name="program_active">Actif</string>
+    <string name="program_ab">Alternance A/B</string>
+    <string name="action_activate">Activer</string>
+    <string name="action_deactivate">Désactiver</string>
+    <string name="delete_program_title">Supprimer le programme ?</string>
+    <string name="delete_program_message">« %1$s » sera supprimé. L\'historique de vos séances réalisées est conservé.</string>
+    <string name="program_active_label">Programme actif</string>
+    <string name="program_active_hint">Le programme actif alimente l\'accueil, le calendrier et les rappels.</string>
+    <string name="program_ab_label">Alternance Semaine A / Semaine B</string>
+    <string name="program_ab_hint">Deux semaines indépendantes qui alternent automatiquement.</string>
+    <string name="program_current_week">Semaine en cours :</string>
+    <string name="action_add_session">Ajouter</string>
+    <string name="session_name">Nom de la séance</string>
+    <string name="unscheduled_sessions">Séances non planifiées</string>
+    <string name="unscheduled_sessions_hint">Séances sans jour attribué : elles n\'apparaissent pas dans le calendrier.</string>
+    <string name="session_disabled">Désactivée</string>
+    <string name="action_disable_session">Désactiver la séance</string>
+    <string name="action_enable_session">Activer la séance</string>
+    <string name="action_copy_to_week_a">Copier vers la semaine A</string>
+    <string name="action_copy_to_week_b">Copier vers la semaine B</string>
+    <string name="delete_session_title">Supprimer la séance ?</string>
+    <string name="delete_session_message">« %1$s » sera retirée du programme.</string>
+
+    <!-- Éditeur de séance -->
+    <string name="session_day">Jour</string>
+    <string name="session_time">Heure d\'entraînement</string>
+    <string name="session_enabled">Séance activée</string>
+    <string name="estimated_duration">Durée estimée</string>
+    <string name="estimated_duration_hint">Facultative. N\'arrête jamais le chronomètre.</string>
+    <string name="exercises_title">Exercices</string>
+    <string name="session_no_exercises">Aucun exercice pour l\'instant.</string>
+    <string name="action_add_exercise">Ajouter un exercice</string>
+    <string name="drag_to_reorder">Glisser pour réordonner</string>
+    <string name="no_planned_sets_short">Séries libres</string>
+    <string name="no_planned_sets_explanation">Aucune série prévue : vous ajouterez les séries librement pendant la séance. Ce n\'est pas une séance incomplète.</string>
+    <string name="default_targets">Cibles facultatives des séries ajoutées</string>
+    <string name="exercise_rest">Repos de l\'exercice</string>
+    <string name="exercise_notes">Notes</string>
+    <string name="col_set">Série</string>
+    <string name="col_reps">Rép.</string>
+    <string name="col_rir">RIR</string>
+    <string name="col_weight">Charge</string>
+    <string name="col_rest">Repos</string>
+    <string name="action_add_set">Ajouter une série</string>
+    <string name="action_duplicate_last_set">Copier la dernière</string>
+    <string name="action_remove_exercise">Retirer l\'exercice</string>
+    <string name="remove_exercise_title">Retirer l\'exercice ?</string>
+    <string name="remove_exercise_message">« %1$s » sera retiré de la séance.</string>
+    <string name="target_reps">Répétitions cibles</string>
+    <string name="target_rir">RIR cible</string>
+    <string name="target_rpe">RPE cible</string>
+    <string name="target_weight">Charge cible</string>
+    <string name="rest_time">Temps de repos</string>
+
+    <!-- Exercices -->
+    <string name="exercise_library">Bibliothèque d\'exercices</string>
+    <string name="choose_exercise">Choisir un exercice</string>
+    <string name="search_exercise">Rechercher un exercice</string>
+    <string name="no_exercise_found">Aucun exercice trouvé. Créez un exercice personnalisé.</string>
+    <string name="custom_exercise">Personnalisé</string>
+    <string name="action_create_exercise">Créer un exercice</string>
+    <string name="edit_exercise">Modifier l\'exercice</string>
+    <string name="exercise_name">Nom de l\'exercice</string>
+    <string name="muscle_group_optional">Groupe musculaire (facultatif)</string>
+    <string name="equipment_optional">Équipement (facultatif)</string>
+    <string name="description_optional">Description (facultative)</string>
+    <string name="notes_optional">Notes (facultatives)</string>
+    <string name="view_history">Voir l\'historique</string>
+    <string name="delete_exercise_title">Supprimer l\'exercice ?</string>
+    <string name="delete_exercise_message">« %1$s » : s\'il a déjà été utilisé, il sera archivé pour conserver votre historique.</string>
+    <string name="exercise_deleted">Exercice supprimé.</string>
+    <string name="exercise_archived">Exercice archivé : il n\'apparaît plus dans la bibliothèque, mais votre historique est conservé.</string>
+
+    <!-- Séance en cours -->
+    <string name="action_finish_workout">Terminer la séance</string>
+    <string name="action_discard_workout">Abandonner la séance</string>
+    <string name="workout_notes">Notes de séance</string>
+    <string name="elapsed">Durée : %1$s</string>
+    <string name="elapsed_with_estimate">Durée : %1$s · Estimée : %2$s</string>
+    <string name="actual_weight">Charge réalisée</string>
+    <string name="actual_reps">Répétitions réalisées</string>
+    <string name="actual_rir">RIR ressenti</string>
+    <string name="action_validate_set">Valider la série</string>
+    <string name="action_remove_set">Supprimer la série</string>
+    <string name="target_prefix">Cible : %1$s</string>
+    <string name="previous_prefix">Préc. : %1$s</string>
+    <string name="extra_set">Série ajoutée</string>
+    <string name="workout_no_sets_hint">Aucune série prévue : ajoutez vos séries au fur et à mesure.</string>
+    <string name="no_previous_performance">Pas encore de performance précédente.</string>
+    <string name="previous_performance_on">Performance précédente (%1$s)</string>
+    <string name="rest_in_progress">Repos</string>
+    <string name="rest_over">Repos terminé</string>
+    <string name="rest_add_30">+30 s</string>
+    <string name="rest_skip">Passer</string>
+    <string name="finish_workout_title">Terminer la séance ?</string>
+    <string name="finish_workout_message">%1$d série(s) validée(s) pour %2$d série(s) prévue(s). Les valeurs non renseignées restent vides.</string>
+    <string name="finish_workout_nothing_done">Aucune série n\'a été validée. La séance sera enregistrée comme non effectuée.</string>
+    <string name="discard_workout_title">Abandonner la séance ?</string>
+    <string name="discard_workout_message">La séance en cours et les séries saisies seront supprimées.</string>
+
+    <!-- Calendrier -->
+    <string name="calendar_month">Mois</string>
+    <string name="calendar_week">Semaine</string>
+    <string name="calendar_no_program">Aucun programme actif.</string>
+    <string name="tap_to_start">Touchez pour commencer</string>
+    <string name="rescheduled_from">Déplacée du %1$s</string>
+    <string name="action_reschedule">Déplacer cette séance</string>
+    <string name="action_restore_schedule">Rétablir la date prévue</string>
+    <string name="action_cancel_occurrence">Annuler cette séance</string>
+    <string name="action_mark_not_done">Marquer comme non effectuée</string>
+    <string name="action_edit_session">Modifier la séance type</string>
+    <string name="reschedule_title">Nouvelle date</string>
+    <string name="reschedule_time">Nouvelle heure</string>
+
+    <!-- Performances -->
+    <string name="tab_history">Historique</string>
+    <string name="tab_exercises">Exercices</string>
+    <string name="tab_records">Records</string>
+    <string name="history_empty_title">Aucune séance enregistrée</string>
+    <string name="history_empty_message">Vos séances terminées apparaîtront ici.</string>
+    <string name="stats_empty_title">Pas encore de données</string>
+    <string name="stats_empty_message">Terminez une séance pour voir votre progression.</string>
+    <string name="duration_estimated">Estimée : %1$s</string>
+    <string name="duration_actual">Réelle : %1$s</string>
+    <string name="duration_difference">Écart : %1$s</string>
+    <string name="record_max_weight">Charge max : %1$s</string>
+    <string name="record_e1rm">1RM estimé : %1$s</string>
+    <string name="record_max_reps">Répétitions max : %1$d</string>
+    <string name="last_done_on">Dernière fois : %1$s</string>
+    <string name="personal_records">Records personnels</string>
+    <string name="sessions_done">Séances réalisées : %1$d</string>
+    <string name="chart_max_weight">Charge maximale</string>
+    <string name="chart_e1rm">1RM estimé (Epley)</string>
+    <string name="chart_total_reps">Répétitions totales</string>
+    <string name="chart_avg_rir">RIR moyen</string>
+    <string name="no_history_for_exercise">Aucune série réalisée pour cet exercice.</string>
+    <string name="no_sets_recorded">Aucune série enregistrée.</string>
+    <string name="set_done_no_values">Validée (valeurs non renseignées)</string>
+    <string name="set_not_done">Non effectuée</string>
+    <string name="compare_previous">Comparaison avec le %1$s</string>
+    <string name="compare_max_weight">Charge max : %1$s %2$s</string>
+    <string name="compare_total_reps">Répétitions totales : %1$s</string>
+    <string name="action_edit_workout">Corriger la séance</string>
+    <string name="delete_workout_title">Supprimer la séance ?</string>
+    <string name="delete_workout_message">Cette séance et ses séries seront définitivement supprimées de l\'historique.</string>
+
+    <!-- Paramètres -->
+    <string name="settings_units">Unités</string>
+    <string name="settings_weight_unit">Unité de charge</string>
+    <string name="settings_weight_increment">Pas du sélecteur de charge</string>
+    <string name="settings_first_day">Premier jour de la semaine</string>
+    <string name="settings_workout">Séance</string>
+    <string name="settings_default_rest">Repos par défaut</string>
+    <string name="settings_default_rest_hint">Utilisé seulement pour les exercices sans repos défini. Laissez vide pour ne rien imposer.</string>
+    <string name="settings_show_estimated">Afficher la durée estimée pendant la séance</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_enabled">Rappels de séance</string>
+    <string name="settings_reminder_before">Rappel avant la séance</string>
+    <string name="minutes_before">%1$d min avant</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_system">Système</string>
+    <string name="settings_data">Données</string>
+    <string name="settings_export">Exporter mes données</string>
+    <string name="settings_export_hint">Sauvegarde complète au format JSON (programmes, historique, exercices).</string>
+    <string name="settings_restore">Restaurer une sauvegarde</string>
+    <string name="settings_restore_hint">Remplace toutes les données actuelles par celles du fichier.</string>
+    <string name="restore_confirm_title">Restaurer la sauvegarde ?</string>
+    <string name="restore_confirm_message">Toutes les données actuelles seront remplacées. Pensez à exporter vos données avant si nécessaire.</string>
+    <string name="export_success">Sauvegarde exportée (%1$d séances).</string>
+    <string name="export_error">L\'export a échoué.</string>
+    <string name="restore_success">Sauvegarde restaurée (%1$d séances).</string>
+    <string name="restore_error">Impossible de restaurer ce fichier.</string>
+    <string name="settings_about">Application</string>
+    <string name="version_value">Version %1$s</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_name">Rappels de séance</string>
+    <string name="notif_channel_description">Vous rappelle vos séances prévues.</string>
+    <string name="notif_title">Séance à venir</string>
+    <string name="notif_text">%1$s prévue à %2$s</string>
+
+    <!-- Import -->
+    <string name="import_program">Importer un programme</string>
+    <string name="imported_program_default_name">Programme importé</string>
+    <string name="import_intro">IronTrack analyse votre document et vous montre un aperçu complet avant tout enregistrement. Rien n\'est inventé : les valeurs absentes restent vides.</string>
+    <string name="import_method_document">Importer un document</string>
+    <string name="import_method_document_hint">TXT, PDF (texte ou scanné, plusieurs pages), JPG, PNG, WEBP ou HEIC.</string>
+    <string name="import_choose_file">Choisir un ou plusieurs fichiers</string>
+    <string name="import_method_image">Importer une image</string>
+    <string name="import_method_image_hint">Photo d\'une feuille de programme, capture d\'écran, tableau ou notes manuscrites lisibles.</string>
+    <string name="import_from_gallery">Galerie</string>
+    <string name="import_take_photo">Photo</string>
+    <string name="import_method_paste">Copier-coller du texte</string>
+    <string name="import_method_paste_hint">Collez votre programme complet ci-dessous.</string>
+    <string name="import_paste_placeholder">UPPER A\nDéveloppé couché : 3 x 8-10, RIR 2\n…</string>
+    <string name="action_analyze_program">Analyser le programme</string>
+    <string name="import_analyzing">Analyse en cours…</string>
+    <string name="import_progress_file">Fichier %1$d sur %2$d</string>
+    <string name="import_progress_page">Lecture de la page %1$d sur %2$d</string>
+    <string name="import_progress_ocr">Reconnaissance du texte de l\'image…</string>
+    <string name="import_progress_ocr_page">Reconnaissance du texte, page %1$d sur %2$d</string>
+    <string name="import_warning_no_text_image">Aucun texte lisible n\'a été trouvé dans une image.</string>
+    <string name="import_warning_page_empty">Aucun texte lisible sur la page %1$d.</string>
+    <string name="import_error_unsupported">Format de fichier non pris en charge.</string>
+    <string name="import_error_read">Impossible de lire le fichier.</string>
+    <string name="import_error_too_large">Le fichier texte est trop volumineux.</string>
+    <string name="import_error_pdf">Impossible de lire ce PDF.</string>
+    <string name="import_error_pdf_protected">Ce PDF est protégé par un mot de passe.</string>
+    <string name="import_error_image">Impossible d\'ouvrir cette image. Le format HEIC n\'est peut-être pas pris en charge par cet appareil.</string>
+    <string name="import_error_no_text">Aucun texte n\'a pu être extrait du document.</string>
+    <string name="import_error_generic">Une erreur est survenue pendant l\'analyse.</string>
+    <string name="import_error_save">Impossible d\'enregistrer le programme importé.</string>
+    <string name="import_summary_days">Jours d\'entraînement : %1$d</string>
+    <string name="import_summary_exercises">Exercices : %1$d</string>
+    <string name="import_summary_sets">Séries prévues : %1$d</string>
+    <string name="import_summary_split">Organisation détectée : %1$s</string>
+    <string name="import_summary_ab_yes">Alternance A/B : détectée dans le document</string>
+    <string name="import_summary_ab_no">Alternance A/B : non détectée</string>
+    <plurals name="import_uncertain_count">
+        <item quantity="one">%1$d élément à vérifier</item>
+        <item quantity="many">%1$d éléments à vérifier</item>
+        <item quantity="other">%1$d éléments à vérifier</item>
+    </plurals>
+    <string name="import_ocr_notice">Texte reconnu automatiquement (OCR) : vérifiez les valeurs signalées.</string>
+    <string name="import_weeks_detected">%1$d semaines détectées (sans alternance A/B explicite). Choisissez quoi importer :</string>
+    <string name="import_week_label">Semaine %1$s</string>
+    <string name="import_map_weeks_ab">Semaines %1$s et %2$s en A/B</string>
+    <string name="import_ab_detected">Semaine A et Semaine B trouvées dans le document.</string>
+    <string name="import_activate">Activer ce programme</string>
+    <string name="import_rest_days">Jours de repos indiqués : %1$s</string>
+    <string name="import_unrecognized_title">Lignes non reconnues</string>
+    <string name="import_unrecognized_hint">Ces lignes n\'ont pas pu être interprétées. Elles sont conservées dans les notes du programme.</string>
+    <string name="import_show_source">Afficher le texte analysé</string>
+    <string name="import_hide_source">Masquer le texte analysé</string>
+    <string name="action_import_program">Importer le programme</string>
+    <string name="import_uncertain_can_import">Les éléments à vérifier peuvent être corrigés maintenant ou plus tard : ils n\'empêchent pas l\'import.</string>
+    <string name="import_source_week">Semaine du document : %1$s</string>
+    <string name="import_assign_day">Attribuer un jour</string>
+    <string name="import_duration_not_set">Durée : non renseignée</string>
+    <string name="import_day_not_in_source">Le document ne précise pas de jour : attribuez-en un ou laissez la séance non planifiée.</string>
+    <string name="import_matched_to">→ %1$s (bibliothèque)</string>
+    <string name="import_library_exercise">Exercice de la bibliothèque</string>
+    <string name="import_new_exercise">→ Nouvel exercice : %1$s</string>
+    <string name="import_to_check">À vérifier</string>
+    <string name="import_ambiguous_name">Nom ambigu : choisissez la bonne correspondance ou gardez le nom d\'origine.</string>
+    <string name="import_keep_original_name">Garder le nom d\'origine</string>
+    <string name="import_search_library">Rechercher…</string>
+    <string name="import_low_ocr">Texte peu lisible : vérifiez cette ligne.</string>
+    <string name="import_source_line">Source : « %1$s »</string>
+    <string name="import_notes">Notes : %1$s</string>
+    <string name="import_no_sets">Nombre de séries non précisé : aucune série ne sera créée d\'avance.</string>
+    <string name="import_default_targets">Cibles indiquées : %1$s</string>
+    <string name="import_mark_checked">Marquer comme vérifié</string>
+    <string name="import_individual_sets">cibles différentes par série</string>
+
+    <!-- À propos et mises à jour -->
+    <string name="about_title">À propos d\'IronTrack</string>
+    <string name="about_description">Planification et suivi d\'entraînement de musculation, 100 % hors ligne.</string>
+    <string name="about_current_version">Version installée : %1$s</string>
+    <string name="about_latest_version">Dernière version disponible : %1$s</string>
+    <string name="about_last_check">Dernière vérification : %1$s</string>
+    <string name="about_offline_note">IronTrack fonctionne entièrement hors ligne. La vérification des mises à jour interroge uniquement GitHub Releases, au plus une fois par jour automatiquement.</string>
+    <string name="update_check_button">Rechercher une mise à jour</string>
+    <string name="update_whats_new">Voir les nouveautés</string>
+    <string name="update_up_to_date">Vous utilisez la dernière version d\'IronTrack.</string>
+    <string name="update_available">Une nouvelle version est disponible.</string>
+    <string name="update_available_title">Nouvelle version disponible</string>
+    <string name="update_checking">Vérification des mises à jour...</string>
+    <string name="update_check_failed">Impossible de vérifier les mises à jour.</string>
+    <string name="update_downloading">Téléchargement en cours...</string>
+    <string name="update_download_done">Téléchargement terminé.</string>
+    <string name="update_error_download">Une erreur est survenue pendant le téléchargement.</string>
+    <string name="update_current_version">Version actuelle : %1$s</string>
+    <string name="update_new_version">Nouvelle version : %1$s</string>
+    <string name="update_download">Télécharger la mise à jour</string>
+    <string name="update_published_on">Publiée le %1$s</string>
+    <string name="update_size">Taille : %1$s Mo</string>
+    <string name="update_notes_title">Nouveautés de la version %1$s</string>
+    <string name="update_no_notes">Aucune note de version.</string>
+    <string name="update_verified">Fichier vérifié : taille, empreinte SHA-256 et signature conformes.</string>
+    <string name="update_install">Installer la mise à jour</string>
+    <string name="update_permission_title">Autorisation nécessaire</string>
+    <string name="update_permission_message">Pour installer la mise à jour, Android demande d\'autoriser IronTrack à installer des applications. Dans l\'écran qui va s\'ouvrir, activez « Autoriser cette source », puis revenez ici et touchez de nouveau « Installer la mise à jour ».</string>
+    <string name="update_open_settings">Ouvrir les réglages</string>
+    <string name="update_auto_check">Vérifier automatiquement (une fois par jour au plus)</string>
+    <string name="update_prereleases">Inclure les préversions</string>
+    <string name="update_prereleases_hint">Désactivé par défaut : seules les versions stables sont proposées.</string>
+    <string name="update_error_no_apk">Aucun fichier APK n\'est joint à cette version.</string>
+    <string name="update_error_no_checksum">L\'empreinte SHA-256 de cette version est introuvable : installation refusée par sécurité.</string>
+    <string name="update_error_size">La taille du fichier téléchargé ne correspond pas : téléchargement annulé.</string>
+    <string name="update_error_checksum">L\'empreinte SHA-256 ne correspond pas : le fichier a été supprimé.</string>
+    <string name="update_error_invalid_apk">Le fichier téléchargé n\'est pas une application Android valide.</string>
+    <string name="update_error_package">Cette mise à jour ne correspond pas à cette installation d\'IronTrack (version de développement ?).</string>
+    <string name="update_error_not_newer">La version téléchargée n\'est pas plus récente que la version installée.</string>
+    <string name="update_error_signature">La signature de la mise à jour diffère de celle de l\'application installée : Android refuserait l\'installation. Consultez le README pour la procédure.</string>
+</resources>
