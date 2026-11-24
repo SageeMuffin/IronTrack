@@ -10,6 +10,7 @@ import com.irontrack.app.data.repo.SettingsRepository
 import com.irontrack.app.data.repo.WorkoutRepository
 import com.irontrack.app.importer.DocumentTextExtractor
 import com.irontrack.app.importer.ImportRepository
+import com.irontrack.app.share.ProgramShareRepository
 import com.irontrack.app.update.UpdateManager
 
 /** Injection de dépendances manuelle : une seule instance de chaque dépôt pour l'application. */
@@ -25,4 +26,5 @@ class AppContainer(context: Context) {
     val documentExtractor = DocumentTextExtractor(appContext)
     val imports = ImportRepository(database, exercises)
     val updates = UpdateManager(appContext, settings)
+    val sharing = ProgramShareRepository(database)
 }

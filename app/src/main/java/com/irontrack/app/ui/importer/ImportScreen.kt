@@ -110,10 +110,10 @@ fun ImportScreen(nav: NavHostController) {
 
     // Contenu partagé depuis une autre application.
     LaunchedEffect(Unit) {
-        when (val s = SharedImportHolder.consume()) {
+        when (val s = SharedImportHolder.consumeDocument()) {
             is SharedImport.Text -> vm.analyzeText(s.text, defaultName)
             is SharedImport.Document -> vm.analyzeFiles(listOf(s.uri to s.mime), defaultName)
-            null -> {}
+            else -> {}
         }
     }
     LaunchedEffect(state) {
@@ -129,7 +129,11 @@ fun ImportScreen(nav: NavHostController) {
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (val s = state) {
                 ImportUiState.Input -> InputStep(
-                    onText = { vm.analyzeText(it, defaultName) },
+                    onText = {
+                        // Un lien de partage IronTrack collé : import direct du programme complet.
+                        if (com.irontrack.core.share.ProgramShareCodec.containsLink(it)) SharedImportHolder.post(SharedImport.ProgramLink(it))
+                        else vm.analyzeText(it, defaultName)
+                    },
                     onFiles = { vm.analyzeFiles(it, defaultName) },
                 )
                 is ImportUiState.Analyzing -> Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

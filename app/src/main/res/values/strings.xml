@@ -312,6 +312,17 @@
     <string name="theme_dark">Sombre</string>
     <string name="theme_light">Clair</string>
     <string name="theme_system">Système</string>
+    <string name="settings_accent">Couleur de l\'interface</string>
+    <string name="accent_orange">Orange</string>
+    <string name="accent_red">Rouge</string>
+    <string name="accent_pink">Rose</string>
+    <string name="accent_purple">Violet</string>
+    <string name="accent_blue">Bleu</string>
+    <string name="accent_cyan">Turquoise</string>
+    <string name="accent_green">Vert</string>
+    <string name="accent_yellow">Jaune</string>
+    <string name="settings_oled">Noir intégral (OLED)</string>
+    <string name="settings_oled_hint">En mode sombre, fond 100 % noir : les pixels des écrans OLED sont éteints, ce qui économise la batterie.</string>
     <string name="settings_data">Données</string>
     <string name="settings_export">Exporter mes données</string>
     <string name="settings_export_hint">Sauvegarde complète au format JSON (programmes, historique, exercices).</string>
@@ -405,6 +416,17 @@
     <string name="import_default_targets">Cibles indiquées : %1$s</string>
     <string name="import_mark_checked">Marquer comme vérifié</string>
     <string name="import_individual_sets">cibles différentes par série</string>
+
+    <!-- Partage de programme -->
+    <string name="share_program">Partager le programme</string>
+    <string name="share_subject">Programme IronTrack : %1$s</string>
+    <string name="share_message">Voici mon programme IronTrack « %1$s ». Ouvre ce lien sur ton téléphone pour l\'ajouter dans ton application :\n%2$s</string>
+    <string name="share_import_title">Programme partagé</string>
+    <string name="share_import_hint">Le programme complet (séances, exercices, séries et cibles) sera ajouté à vos programmes. Vous pourrez le modifier ensuite.</string>
+    <string name="share_import_button">Ajouter le programme</string>
+    <string name="share_invalid_title">Lien de programme invalide</string>
+    <string name="share_invalid_message">Ce lien est incomplet ou abîmé. Demandez à votre ami de vous le renvoyer en entier.</string>
+    <string name="share_import_error">Impossible d\'ajouter ce programme.</string>
 
     <!-- À propos et mises à jour -->
     <string name="about_title">À propos d\'IronTrack</string>

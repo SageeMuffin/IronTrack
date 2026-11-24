@@ -34,6 +34,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.IronTrack">
             <intent-filter>
@@ -41,6 +42,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <!-- Partage d'un programme (texte, PDF, image) vers IronTrack. -->
+            <!-- Lien de partage d'un programme : irontrack://programme?d=… (ouvert depuis la page web de partage). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="irontrack" android:host="programme" />
+            </intent-filter>
+            <!-- Même lien au format web (si l'utilisateur autorise IronTrack à ouvrir ces liens). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="sageemuffin.github.io" android:pathPrefix="/IronTrack/p" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
