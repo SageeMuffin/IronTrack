@@ -44,6 +44,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.irontrack.app.AppContainer
 import com.irontrack.app.R
+import com.irontrack.app.share.shareProgram
 import com.irontrack.app.data.db.ProgramFull
 import com.irontrack.app.notifications.ReminderScheduler
 import com.irontrack.app.ui.appViewModel
@@ -97,6 +98,9 @@ fun ProgramsScreen(nav: NavHostController) {
             )
         },
     ) { padding ->
+        val shareContext = androidx.compose.ui.platform.LocalContext.current
+        val shareContainer = com.irontrack.app.ui.appContainer()
+        val shareScope = androidx.compose.runtime.rememberCoroutineScope()
         val list = programs
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
@@ -121,6 +125,7 @@ fun ProgramsScreen(nav: NavHostController) {
                     onDeactivate = { vm.deactivate(p.program.id) },
                     onRename = { renaming = p },
                     onDuplicate = { duplicating = p },
+                    onShare = { shareScope.launch { shareProgram(shareContext, shareContainer, p.program.id) } },
                     onDelete = { deleting = p },
                 )
             }
@@ -164,6 +169,7 @@ private fun ProgramCard(
     onDeactivate: () -> Unit,
     onRename: () -> Unit,
     onDuplicate: () -> Unit,
+    onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var menu by remember { mutableStateOf(false) }
@@ -193,6 +199,7 @@ private fun ProgramCard(
                     }
                     DropdownMenuItem(text = { Text(stringResource(R.string.action_rename)) }, onClick = { menu = false; onRename() })
                     DropdownMenuItem(text = { Text(stringResource(R.string.action_duplicate)) }, onClick = { menu = false; onDuplicate() })
+                    DropdownMenuItem(text = { Text(stringResource(R.string.share_program)) }, onClick = { menu = false; onShare() })
                     DropdownMenuItem(text = { Text(stringResource(R.string.action_delete)) }, onClick = { menu = false; onDelete() })
                 }
             }

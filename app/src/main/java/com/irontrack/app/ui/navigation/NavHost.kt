@@ -28,7 +28,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.irontrack.app.R
+import com.irontrack.app.ui.components.AutoShrinkText
+import com.irontrack.app.importer.SharedImport
 import com.irontrack.app.importer.SharedImportHolder
+import com.irontrack.app.share.ProgramLinkDialog
 import com.irontrack.app.ui.about.AboutScreen
 import com.irontrack.app.ui.calendar.CalendarScreen
 import com.irontrack.app.ui.exercises.ExerciseLibraryScreen
@@ -85,7 +88,19 @@ fun IronTrackNavHost() {
     // Contenu partagé vers IronTrack (texte, PDF, image) : ouvrir l'import.
     val shared by SharedImportHolder.pending.collectAsStateWithLifecycle()
     LaunchedEffect(shared) {
-        if (shared != null && currentRoute != Routes.IMPORT) nav.navigate(Routes.IMPORT)
+        if (shared != null && shared !is SharedImport.ProgramLink && currentRoute != Routes.IMPORT) nav.navigate(Routes.IMPORT)
+    }
+    // Programme reçu par lien de partage : confirmation puis ouverture du programme importé.
+    (shared as? SharedImport.ProgramLink)?.let { link ->
+        ProgramLinkDialog(
+            link = link.link,
+            onClose = { SharedImportHolder.consumeProgramLink() },
+            onImported = { id ->
+                SharedImportHolder.consumeProgramLink()
+                nav.navigateTab(Routes.PROGRAMS)
+                nav.navigate(Routes.program(id))
+            },
+        )
     }
 
     Scaffold(
@@ -97,7 +112,7 @@ fun IronTrackNavHost() {
                             selected = currentRoute == tab.route,
                             onClick = { nav.navigateTab(tab.route) },
                             icon = { Icon(tab.icon, contentDescription = null) },
-                            label = { Text(stringResource(tab.label), maxLines = 1) },
+                            label = { AutoShrinkText(stringResource(tab.label)) },
                         )
                     }
                 }

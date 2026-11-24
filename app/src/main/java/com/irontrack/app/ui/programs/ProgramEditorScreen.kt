@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
+import com.irontrack.app.share.shareProgram
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -106,7 +108,10 @@ class ProgramEditorViewModel(private val c: AppContainer, private val app: andro
 
 @Composable
 fun ProgramEditorScreen(nav: NavHostController, programId: Long) {
-    val app = LocalContext.current.applicationContext as android.app.Application
+    val context = LocalContext.current
+    val app = context.applicationContext as android.app.Application
+    val appContainerRef = com.irontrack.app.ui.appContainer()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val vm = appViewModel(key = "program_$programId") { ProgramEditorViewModel(it, app, programId) }
     val program by vm.program.collectAsStateWithLifecycle()
     val settings = LocalAppSettings.current
@@ -120,6 +125,9 @@ fun ProgramEditorScreen(nav: NavHostController, programId: Long) {
         title = p?.program?.name ?: stringResource(R.string.nav_programs),
         onBack = { nav.popBackStack() },
         actions = {
+            IconButton(onClick = { scope.launch { shareProgram(context, appContainerRef, programId) } }) {
+                Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.share_program))
+            }
             IconButton(onClick = { renaming = true }) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.action_rename)) }
         },
     ) { padding ->

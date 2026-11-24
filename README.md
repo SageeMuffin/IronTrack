@@ -41,6 +41,18 @@ La version de développement (`IronTrack Debug`, identifiant `com.irontrack.app.
 
 ---
 
+## Partager un programme
+
+Dans **Programmes**, ouvrez un programme puis touchez l'icône de partage (ou menu ⋮ → « Partager le programme »).
+IronTrack envoie un lien par WhatsApp, SMS, e-mail, etc. Le programme complet (séances, exercices, séries, cibles,
+durées estimées) est contenu dans le lien lui-même : aucun serveur ni compte n'est nécessaire.
+
+Votre ami ouvre le lien sur son téléphone, touche « Ajouter dans IronTrack », puis confirme dans l'application.
+Si le lien ne s'ouvre pas dans l'application, il peut le copier et le coller dans **Programmes → Importer un programme**.
+
+La page qui reçoit le lien est hébergée par GitHub Pages depuis le dossier `docs/`. À activer une seule fois :
+**Settings → Pages → Build and deployment → Source : Deploy from a branch → Branch : `main`, dossier `/docs`**.
+
 ## Environnement de développement
 
 - Android Studio (Ladybug ou plus récent) ou JDK 17 + Android SDK (plateforme 35).
@@ -106,6 +118,7 @@ Ne régénérez jamais cette clé : toutes les versions doivent être signées a
    git tag -a v1.1.0 -m "Nouveautés : …"
    git push origin v1.1.0
    ```
+   Variante sans terminal : onglet **Actions → Release → Run workflow**, saisissez la version (ex. `1.1.0`) ; le tag est créé automatiquement.
 3. Le workflow vérifie le format du tag et l'absence de release existante, restaure le keystore dans un dossier temporaire, lance les tests, compile l'APK signé, vérifie la signature avec `apksigner`, calcule l'empreinte SHA-256 et crée la release avec :
    - `IronTrack-v1.1.0.apk`
    - `IronTrack-v1.1.0.apk.sha256`

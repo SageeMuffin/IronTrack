@@ -13,6 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.irontrack.app.importer.SharedImport
+import com.irontrack.core.share.ProgramShareCodec
 import com.irontrack.app.importer.SharedImportHolder
 import com.irontrack.app.ui.LocalAppSettings
 import com.irontrack.app.ui.navigation.IronTrackNavHost
@@ -33,12 +34,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        handleShareIntent(intent)
+        if (savedInstanceState == null) handleShareIntent(intent)
         val container = (application as IronTrackApp).container
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
             CompositionLocalProvider(LocalAppSettings provides settings) {
-                IronTrackTheme(settings.theme) {
+                IronTrackTheme(settings.theme, settings.accent, settings.oledBlack) {
                     IronTrackNavHost()
                 }
             }
@@ -51,11 +52,20 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleShareIntent(intent: Intent?) {
+        // Lien de partage d'un programme (irontrack://programme?d=… ou page web IronTrack).
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val data = intent.dataString ?: return
+            if (ProgramShareCodec.containsLink(data)) SharedImportHolder.post(SharedImport.ProgramLink(data))
+            setIntent(Intent(this, MainActivity::class.java))
+            return
+        }
         if (intent?.action != Intent.ACTION_SEND) return
         val type = intent.type ?: return
         if (type == "text/plain") {
             val text = intent.getStringExtra(Intent.EXTRA_TEXT)
-            if (!text.isNullOrBlank()) SharedImportHolder.post(SharedImport.Text(text))
+            if (!text.isNullOrBlank()) {
+                SharedImportHolder.post(if (ProgramShareCodec.containsLink(text)) SharedImport.ProgramLink(text) else SharedImport.Text(text))
+            }
             return
         }
         val uri: Uri? = if (Build.VERSION.SDK_INT >= 33) intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)

@@ -6,7 +6,21 @@ import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +54,9 @@ import androidx.navigation.NavHostController
 import com.irontrack.app.AppContainer
 import com.irontrack.app.BuildConfig
 import com.irontrack.app.R
+import com.irontrack.app.data.repo.AccentColor
 import com.irontrack.app.data.repo.ThemePref
+import com.irontrack.app.ui.theme.palette
 import com.irontrack.app.data.repo.WeightUnitPref
 import com.irontrack.app.notifications.ReminderScheduler
 import com.irontrack.app.ui.Fmt
@@ -67,6 +83,8 @@ class SettingsViewModel(val c: AppContainer, private val app: android.app.Applic
     fun setIncrement(v: Double) = viewModelScope.launch { s.setWeightIncrement(v) }
     fun setFirstDay(d: DayOfWeek) = viewModelScope.launch { s.setFirstDayOfWeek(d) }
     fun setTheme(t: ThemePref) = viewModelScope.launch { s.setTheme(t) }
+    fun setAccent(a: AccentColor) = viewModelScope.launch { s.setAccent(a) }
+    fun setOledBlack(v: Boolean) = viewModelScope.launch { s.setOledBlack(v) }
     fun setDefaultRest(v: Int?) = viewModelScope.launch { s.setDefaultRestSeconds(v) }
     fun setShowEstimated(v: Boolean) = viewModelScope.launch { s.setShowEstimated(v) }
     fun setNotifications(v: Boolean) = viewModelScope.launch { s.setNotificationsEnabled(v); ReminderScheduler.reschedule(app) }
@@ -76,7 +94,7 @@ class SettingsViewModel(val c: AppContainer, private val app: android.app.Applic
     suspend fun restore(uri: Uri): Result<Int> = runCatching { c.backup.restore(uri).also { ReminderScheduler.reschedule(app) } }
 }
 
-private enum class Picker { UNIT, INCREMENT, FIRST_DAY, THEME, REST, REMINDER }
+private enum class Picker { UNIT, INCREMENT, FIRST_DAY, THEME, ACCENT, REST, REMINDER }
 
 @Composable
 fun SettingsScreen(nav: NavHostController) {
@@ -135,6 +153,8 @@ fun SettingsScreen(nav: NavHostController) {
 
             SectionTitle(stringResource(R.string.settings_appearance), Modifier.padding(horizontal = 16.dp))
             SettingRow(stringResource(R.string.settings_theme), themeLabel(settings.theme), onClick = { picker = Picker.THEME })
+            SettingRow(stringResource(R.string.settings_accent), accentLabel(settings.accent), onClick = { picker = Picker.ACCENT })
+            SwitchRow(stringResource(R.string.settings_oled), settings.oledBlack, subtitle = stringResource(R.string.settings_oled_hint)) { vm.setOledBlack(it) }
 
             SectionTitle(stringResource(R.string.settings_data), Modifier.padding(horizontal = 16.dp))
             SettingRow(stringResource(R.string.settings_export), null, subtitle = stringResource(R.string.settings_export_hint),
@@ -169,6 +189,7 @@ fun SettingsScreen(nav: NavHostController) {
         }
         Picker.THEME -> ChoiceDialog(stringResource(R.string.settings_theme), ThemePref.entries.map { themeLabel(it) }, settings.theme.ordinal,
             onDismiss = { picker = null }) { vm.setTheme(ThemePref.entries[it]); picker = null }
+        Picker.ACCENT -> AccentDialog(settings.accent, onDismiss = { picker = null }) { vm.setAccent(it); picker = null }
         Picker.REST -> RestSheet(stringResource(R.string.settings_default_rest), settings.defaultRestSeconds, onDismiss = { picker = null }) {
             vm.setDefaultRest(it); picker = null
         }
@@ -217,11 +238,58 @@ private fun themeLabel(t: ThemePref) = stringResource(
 )
 
 @Composable
-private fun SwitchRow(title: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+private fun SwitchRow(title: String, checked: Boolean, subtitle: String? = null, onChange: (Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable { onChange(!checked) }.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
         Switch(checked = checked, onCheckedChange = onChange)
     }
+}
+
+@Composable
+private fun accentLabel(a: AccentColor) = stringResource(
+    when (a) {
+        AccentColor.ORANGE -> R.string.accent_orange
+        AccentColor.RED -> R.string.accent_red
+        AccentColor.PINK -> R.string.accent_pink
+        AccentColor.PURPLE -> R.string.accent_purple
+        AccentColor.BLUE -> R.string.accent_blue
+        AccentColor.CYAN -> R.string.accent_cyan
+        AccentColor.GREEN -> R.string.accent_green
+        AccentColor.YELLOW -> R.string.accent_yellow
+    }
+)
+
+/** Choix de la couleur de l'interface : pastilles de couleur avec leur nom. */
+@Composable
+private fun AccentDialog(selected: AccentColor, onDismiss: () -> Unit, onSelect: (AccentColor) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_accent)) },
+        text = {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                AccentColor.entries.forEach { a ->
+                    val isSelected = a == selected
+                    Column(
+                        Modifier.width(64.dp).clickable { onSelect(a) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Box(
+                            Modifier.size(44.dp).clip(CircleShape).background(a.palette().swatch)
+                                .border(if (isSelected) 3.dp else 0.dp, MaterialTheme.colorScheme.onSurface, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (isSelected) Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White)
+                        }
+                        Text(accentLabel(a), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp), maxLines = 1)
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_close)) } },
+    )
 }
 
 @Composable
