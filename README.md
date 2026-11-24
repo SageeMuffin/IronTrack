@@ -118,6 +118,7 @@ Ne régénérez jamais cette clé : toutes les versions doivent être signées a
    git tag -a v1.1.0 -m "Nouveautés : …"
    git push origin v1.1.0
    ```
+   Variante sans terminal : onglet **Actions → Release → Run workflow**, saisissez la version (ex. `1.1.0`) ; le tag est créé automatiquement.
 3. Le workflow vérifie le format du tag et l'absence de release existante, restaure le keystore dans un dossier temporaire, lance les tests, compile l'APK signé, vérifie la signature avec `apksigner`, calcule l'empreinte SHA-256 et crée la release avec :
    - `IronTrack-v1.1.0.apk`
    - `IronTrack-v1.1.0.apk.sha256`

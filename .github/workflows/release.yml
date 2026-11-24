@@ -13,12 +13,18 @@ name: Release
 on:
   push:
     tags: ["v*.*.*"]
+  # Publication sans pousser de tag : le tag vX.Y.Z est créé par la release sur le commit choisi.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version à publier (X.Y.Z, ex. 1.0.0)"
+        required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.version || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -28,11 +34,11 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write # nécessaire uniquement pour créer la Release
+    env:
+      TAG: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
     steps:
       - name: Vérifier le format du tag
         id: version
-        env:
-          TAG: ${{ github.ref_name }}
         run: |
           if [[ ! "$TAG" =~ ^v([0-9]{1,3})\.([0-9]{1,2})\.([0-9]{1,2})$ ]]; then
             echo "::error::Tag « $TAG » invalide : format attendu vX.Y.Z (ex. v1.0.0, chaque partie ≤ 99 pour mineur/correctif)."
@@ -43,7 +49,6 @@ jobs:
       - name: Vérifier qu'aucune release n'existe déjà pour ce tag
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
         run: |
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "::error::La release $TAG existe déjà. Créez un nouveau tag avec un numéro de version supérieur."
@@ -136,7 +141,6 @@ jobs:
       - name: Créer la GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
           APK: ${{ steps.apk.outputs.apk }}
           SHA: ${{ steps.apk.outputs.sha }}
         run: |
@@ -147,7 +151,7 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --title "IronTrack $TAG" \
             --notes-file notes.md \
-            --verify-tag
+            --target "$GITHUB_SHA"
 
       - name: Supprimer le keystore
         if: always()
