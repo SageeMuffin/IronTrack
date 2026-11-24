@@ -14,6 +14,9 @@ val WarningAmber = Color(0xFFE0A030)
 val MissedRed = Color(0xFFE5534B)
 val WeekAColor = Color(0xFF4F8EF7)
 val WeekBColor = Color(0xFFB46BF2)
+/** Évolution d'une performance : bleu = progression, jaune = baisse. */
+val DeltaUpBlue = Color(0xFF3B9BFF)
+val DeltaDownYellow = Color(0xFFF2C230)
 
 /** Déclinaisons d'une couleur d'accent pour les thèmes sombre et clair. */
 data class AccentPalette(

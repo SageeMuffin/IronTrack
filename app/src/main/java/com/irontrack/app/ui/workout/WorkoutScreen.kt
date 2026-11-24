@@ -69,6 +69,9 @@ import com.irontrack.app.ui.components.RepsSheet
 import com.irontrack.app.ui.components.RirSheet
 import com.irontrack.app.ui.components.TextInputDialog
 import com.irontrack.app.ui.components.ValueCell
+import com.irontrack.app.ui.components.DeltaBadge
+import com.irontrack.app.ui.components.NONE
+import com.irontrack.core.util.PerformanceDelta
 import com.irontrack.app.ui.components.WeightSheet
 import com.irontrack.app.ui.exercises.ExercisePickerDialog
 import com.irontrack.app.ui.navigation.Routes
@@ -102,9 +105,18 @@ class WorkoutViewModel(private val c: AppContainer, val workoutId: Long) : ViewM
 
     fun update(set: WorkoutSetEntity) = viewModelScope.launch { c.workouts.updateSet(set) }
 
-    fun toggleCompleted(set: WorkoutSetEntity, restSeconds: Int?) = viewModelScope.launch {
+    /**
+     * Valide (ou dé-valide) une série. À la validation, les valeurs non saisies reprennent la performance
+     * de la séance précédente (valeur de base proposée) ; s'il n'y en a pas, elles restent vides.
+     */
+    fun toggleCompleted(set: WorkoutSetEntity, restSeconds: Int?, suggestion: WorkoutSetEntity? = null) = viewModelScope.launch {
         val done = !set.completed
-        c.workouts.updateSet(set.copy(completed = done, completedAt = if (done) System.currentTimeMillis() else null))
+        val base = if (done && suggestion != null) set.copy(
+            actualWeightKg = set.actualWeightKg ?: suggestion.actualWeightKg,
+            actualReps = set.actualReps ?: suggestion.actualReps,
+            actualRir = set.actualRir ?: suggestion.actualRir,
+        ) else set
+        c.workouts.updateSet(base.copy(completed = done, completedAt = if (done) System.currentTimeMillis() else null))
         if (done && restSeconds != null && restSeconds > 0) _restEndsAt.value = System.currentTimeMillis() + restSeconds * 1000L
     }
 
@@ -195,7 +207,7 @@ fun WorkoutScreen(nav: NavHostController, workoutId: Long) {
                     previous = previous[ex.exercise.id],
                     defaultRest = settings.defaultRestSeconds,
                     onEdit = { editing = it },
-                    onToggle = { set -> vm.toggleCompleted(set, set.targetRestSeconds ?: ex.item.restSeconds ?: settings.defaultRestSeconds) },
+                    onToggle = { set, prev -> vm.toggleCompleted(set, set.targetRestSeconds ?: ex.item.restSeconds ?: settings.defaultRestSeconds, prev) },
                     onAddSet = { vm.addSet(ex.item.id) },
                     onRemoveSet = vm::removeSet,
                     onRemoveExercise = { vm.removeExercise(ex.item.id) },
@@ -289,7 +301,7 @@ private fun ExerciseBlock(
     previous: PreviousPerformance?,
     defaultRest: Int?,
     onEdit: (SetField) -> Unit,
-    onToggle: (WorkoutSetEntity) -> Unit,
+    onToggle: (WorkoutSetEntity, WorkoutSetEntity?) -> Unit,
     onAddSet: () -> Unit,
     onRemoveSet: (WorkoutSetEntity) -> Unit,
     onRemoveExercise: () -> Unit,
@@ -327,8 +339,9 @@ private fun ExerciseBlock(
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))
             }
             sets.forEach { set ->
-                val prev = previous?.sets?.firstOrNull { it.setIndex == set.setIndex }
-                SetRow(set, prev, onEdit, onToggle, onRemoveSet)
+                // Valeur de base : même série de la séance précédente, sinon sa dernière série.
+                val prev = previous?.sets?.firstOrNull { it.setIndex == set.setIndex } ?: previous?.sets?.maxByOrNull { it.setIndex }
+                SetRow(set, prev, onEdit, { onToggle(it, prev) }, onRemoveSet)
             }
             TextButton(onClick = onAddSet) { Icon(Icons.Filled.Add, null); Text(stringResource(R.string.action_add_set)) }
         }
@@ -355,9 +368,13 @@ private fun SetRow(
                     DropdownMenuItem(text = { Text(stringResource(R.string.action_remove_set)) }, onClick = { menu = false; onRemove(set) })
                 }
             }
-            ValueCell(weightText(set.actualWeightKg), { onEdit(SetField.Weight(set, set.targetWeightKg ?: prev?.actualWeightKg)) }, Modifier.weight(1.3f), highlighted = set.completed)
-            ValueCell(set.actualReps?.toString(), { onEdit(SetField.Reps(set, set.targetRepsMax ?: set.targetRepsMin ?: prev?.actualReps)) }, Modifier.weight(1f), highlighted = set.completed)
-            ValueCell(set.actualRir?.toString(), { onEdit(SetField.Rir(set, set.targetRir ?: prev?.actualRir)) }, Modifier.weight(1f), highlighted = set.completed)
+            // Les valeurs de la séance précédente s'affichent en grisé et servent de point de départ aux molettes.
+            ValueCell(weightText(set.actualWeightKg), { onEdit(SetField.Weight(set, prev?.actualWeightKg ?: set.targetWeightKg)) }, Modifier.weight(1.3f),
+                placeholder = weightText(prev?.actualWeightKg) ?: NONE, highlighted = set.completed)
+            ValueCell(set.actualReps?.toString(), { onEdit(SetField.Reps(set, prev?.actualReps ?: set.targetRepsMax ?: set.targetRepsMin)) }, Modifier.weight(1f),
+                placeholder = prev?.actualReps?.toString() ?: NONE, highlighted = set.completed)
+            ValueCell(set.actualRir?.toString(), { onEdit(SetField.Rir(set, prev?.actualRir ?: set.targetRir)) }, Modifier.weight(1f),
+                placeholder = prev?.actualRir?.toString() ?: NONE, highlighted = set.completed)
             IconButton(onClick = { onToggle(set) }, modifier = Modifier.size(44.dp)) {
                 Box(
                     Modifier.size(32.dp).background(if (set.completed) SuccessGreen else MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
@@ -373,9 +390,16 @@ private fun SetRow(
             prev?.let { p -> previousSetText(p)?.let { add(stringResource(R.string.previous_prefix, it)) } }
             if (!set.planned) add(stringResource(R.string.extra_set))
         }
-        if (info.isNotEmpty()) {
-            Text(info.joinToString("  ·  "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 36.dp))
+        val delta = if (set.completed && prev != null)
+            PerformanceDelta.percent(prev.actualWeightKg, prev.actualReps, set.actualWeightKg, set.actualReps) else null
+        if (info.isNotEmpty() || delta != null) {
+            Row(Modifier.padding(start = 36.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (info.isNotEmpty()) {
+                    Text(info.joinToString("  ·  "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f, fill = false))
+                }
+                delta?.let { DeltaBadge(it, Modifier.padding(start = 8.dp)) }
+            }
         }
     }
 }
