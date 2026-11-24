@@ -37,6 +37,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.irontrack.app.AppContainer
 import com.irontrack.app.R
+import com.irontrack.app.ui.components.DeltaBadge
+import com.irontrack.core.util.PerformanceDelta
 import com.irontrack.app.data.db.ExerciseSetHistoryRow
 import com.irontrack.app.data.db.WorkoutExerciseFull
 import com.irontrack.app.data.repo.PreviousPerformance
@@ -119,7 +121,7 @@ private fun ExerciseResultCard(ex: WorkoutExerciseFull, workoutId: Long, started
             val sets = ex.sortedSets
             if (sets.isEmpty()) Text(stringResource(R.string.no_sets_recorded), style = MaterialTheme.typography.bodySmall)
             sets.forEach { s ->
-                Row {
+                Row(verticalAlignment = Alignment.Top) {
                     Text("${s.setIndex}.", Modifier.width(28.dp), style = MaterialTheme.typography.bodyMedium)
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -130,6 +132,10 @@ private fun ExerciseResultCard(ex: WorkoutExerciseFull, workoutId: Long, started
                         targetSummary(s.targetRepsMin, s.targetRepsMax, s.targetRir, s.targetRirMax, s.targetRpe, s.targetWeightKg, null)?.let {
                             Text(stringResource(R.string.target_prefix, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
+                    }
+                    val ps = prev?.sets?.let { list -> list.firstOrNull { it.setIndex == s.setIndex } ?: list.maxByOrNull { it.setIndex } }
+                    if (s.completed && ps != null) {
+                        PerformanceDelta.percent(ps.actualWeightKg, ps.actualReps, s.actualWeightKg, s.actualReps)?.let { DeltaBadge(it) }
                     }
                 }
             }
