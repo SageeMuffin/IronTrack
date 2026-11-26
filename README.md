@@ -3,6 +3,7 @@
 IronTrack est une application Android native de planification et de suivi d'entraînement de musculation, entièrement en français et 100 % hors ligne.
 
 - Programmes avec alternance **Semaine A / Semaine B**, séances par jour de la semaine, heure et durée estimée facultatives.
+- **Séances sans jour fixe** : un programme peut ne contenir que des séances libres, lancées à n'importe quel moment depuis l'accueil (ou depuis l'éditeur de séance). Toute séance du programme peut aussi être commencée un autre jour que celui prévu.
 - Séries détaillées : répétitions (fixes ou fourchette), RIR, RPE, charge et repos, **tous facultatifs** : une valeur absente reste vide, elle n'est jamais remplacée par 0.
 - Saisie par molettes (pas de clavier pour les valeurs numériques).
 - Séance en cours : chronomètre, durée estimée, minuteur de repos, performances précédentes, séries ajoutées à la volée.

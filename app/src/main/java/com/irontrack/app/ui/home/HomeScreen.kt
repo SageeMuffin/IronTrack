@@ -37,6 +37,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.irontrack.app.AppContainer
 import com.irontrack.app.R
+import com.irontrack.app.data.db.SessionFull
 import com.irontrack.app.data.db.WorkoutEntity
 import com.irontrack.app.data.repo.CalendarEntry
 import com.irontrack.app.data.repo.EntryStatus
@@ -91,13 +92,29 @@ class HomeViewModel(private val c: AppContainer) : ViewModel() {
             onStarted(c.workouts.startFromSession(sid, entry.originalDate ?: entry.date, entry.week))
         }
     }
+
+    /**
+     * Lance une séance choisie librement. Si cette séance est justement prévue aujourd'hui et pas encore
+     * commencée, elle est rattachée à cette date du calendrier ; sinon elle est enregistrée comme séance
+     * réalisée hors calendrier, à la date du jour.
+     */
+    fun startSession(s: SessionFull, onStarted: (Long) -> Unit) {
+        val st = state.value
+        val todayEntry = st.todayEntries.firstOrNull { it.session?.session?.id == s.session.id && it.workout == null }
+        if (todayEntry != null) return start(todayEntry, onStarted)
+        viewModelScope.launch { onStarted(c.workouts.startFromSession(s.session.id, null, s.session.week)) }
+    }
 }
 
 @Composable
 fun HomeScreen(nav: NavHostController) {
     val vm = appViewModel { HomeViewModel(it) }
     val state by vm.state.collectAsStateWithLifecycle()
-    var confirmStart by remember { mutableStateOf<CalendarEntry?>(null) }
+    // Démarrage en attente de confirmation (une autre séance est déjà en cours).
+    var confirmStart by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var picking by remember { mutableStateOf(false) }
+    val openWorkout: (Long) -> Unit = { id -> nav.navigate(Routes.workout(id)) }
+    fun guarded(action: () -> Unit) { if (state.inProgress != null) confirmStart = action else action() }
     val latest = com.irontrack.app.ui.LocalAppSettings.current.latestKnownVersion
     val updateAvailable = latest?.let { com.irontrack.core.util.SemVer.parse(it) }?.let { it.code > com.irontrack.app.BuildConfig.VERSION_CODE } == true
 
@@ -148,13 +165,23 @@ fun HomeScreen(nav: NavHostController) {
                 item { Text(stringResource(R.string.home_today), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
                 todays.forEach { e ->
                     item {
-                        TodayCard(e, onStart = {
-                            if (state.inProgress != null) confirmStart = e
-                            else vm.start(e) { id -> nav.navigate(Routes.workout(id)) }
-                        }, onOpen = { e.workout?.let { nav.navigate(if (it.status == "IN_PROGRESS") Routes.workout(it.id) else Routes.workoutDetail(it.id)) } })
+                        TodayCard(e, onStart = { guarded { vm.start(e, openWorkout) } }, onOpen = { e.workout?.let { nav.navigate(if (it.status == "IN_PROGRESS") Routes.workout(it.id) else Routes.workoutDetail(it.id)) } })
                     }
                 }
-            } else if (state.snapshot?.program != null) {
+            }
+            if (isFreeProgram(state.snapshot?.program)) {
+                // Programme sans jours attribués : on choisit sa séance quand on veut.
+                val p = state.snapshot!!.program!!
+                item {
+                    Text(stringResource(R.string.home_free_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.home_free_message), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                startableSessions(p).forEach { s ->
+                    item(key = "free_${s.session.id}") {
+                        StartSessionCard(s, showWeek = p.program.abEnabled) { guarded { vm.startSession(s, openWorkout) } }
+                    }
+                }
+            } else if (todays.isEmpty() && state.snapshot?.program != null) {
                 item {
                     Card { Column(Modifier.padding(16.dp)) {
                         Text(stringResource(R.string.home_rest_day), style = MaterialTheme.typography.titleMedium)
@@ -183,6 +210,15 @@ fun HomeScreen(nav: NavHostController) {
                     }
                 }
             }
+            val program = state.snapshot?.program
+            if (program != null && !isFreeProgram(program) && startableSessions(program).isNotEmpty()) {
+                item {
+                    OutlinedButton(onClick = { picking = true }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                        Text(stringResource(R.string.action_start_other_session))
+                    }
+                }
+            }
             val week = state.weekEntries
             if (week.isNotEmpty()) {
                 item {
@@ -207,12 +243,17 @@ fun HomeScreen(nav: NavHostController) {
         }
     }
 
-    confirmStart?.let { e ->
+    if (picking) {
+        state.snapshot?.program?.let { p ->
+            SessionPickerDialog(p, onPick = { s -> picking = false; guarded { vm.startSession(s, openWorkout) } }, onDismiss = { picking = false })
+        }
+    }
+    confirmStart?.let { action ->
         ConfirmDialog(
             title = stringResource(R.string.home_already_in_progress_title),
             text = stringResource(R.string.home_already_in_progress_message),
             confirmLabel = stringResource(R.string.action_start_anyway),
-            onConfirm = { confirmStart = null; vm.start(e) { id -> nav.navigate(Routes.workout(id)) } },
+            onConfirm = { confirmStart = null; action() },
             onDismiss = { confirmStart = null },
         )
     }

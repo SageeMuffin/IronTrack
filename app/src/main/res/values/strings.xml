@@ -130,6 +130,14 @@
     <string name="action_create_program">Créer un programme</string>
     <string name="home_rest_day">Jour de repos</string>
     <string name="home_rest_day_message">Aucune séance prévue aujourd\'hui.</string>
+    <string name="home_free_title">Choisir une séance</string>
+    <string name="home_free_message">Votre programme n\'impose pas de jours : lancez la séance de votre choix.</string>
+    <string name="action_start_other_session">Commencer une autre séance</string>
+    <string name="action_start">Commencer</string>
+    <string name="action_start_this_session">Commencer cette séance maintenant</string>
+    <string name="pick_session_title">Quelle séance commencer ?</string>
+    <string name="pick_session_empty">Ce programme n\'a aucune séance active.</string>
+    <string name="free_session_no_day">Sans jour fixe</string>
     <string name="home_next_workout">Prochaine séance</string>
     <string name="home_week_progress">Progression de la semaine</string>
     <string name="home_week_progress_value">%1$d séance(s) effectuée(s) sur %2$d</string>
@@ -161,8 +169,8 @@
     <string name="program_current_week">Semaine en cours :</string>
     <string name="action_add_session">Ajouter</string>
     <string name="session_name">Nom de la séance</string>
-    <string name="unscheduled_sessions">Séances non planifiées</string>
-    <string name="unscheduled_sessions_hint">Séances sans jour attribué : elles n\'apparaissent pas dans le calendrier.</string>
+    <string name="unscheduled_sessions">Séances sans jour fixe</string>
+    <string name="unscheduled_sessions_hint">Ajoutez ici les séances à faire quand vous voulez : elles n\'apparaissent pas dans le calendrier, et se lancent depuis l\'accueil.</string>
     <string name="session_disabled">Désactivée</string>
     <string name="action_disable_session">Désactiver la séance</string>
     <string name="action_enable_session">Activer la séance</string>
