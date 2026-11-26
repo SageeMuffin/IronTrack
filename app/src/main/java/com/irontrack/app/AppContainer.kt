@@ -3,6 +3,7 @@ package com.irontrack.app
 import android.content.Context
 import com.irontrack.app.data.db.IronTrackDatabase
 import com.irontrack.app.data.repo.BackupManager
+import com.irontrack.app.data.repo.BodyRepository
 import com.irontrack.app.data.repo.ExerciseRepository
 import com.irontrack.app.data.repo.ProgramRepository
 import com.irontrack.app.data.repo.ScheduleService
@@ -27,4 +28,5 @@ class AppContainer(context: Context) {
     val imports = ImportRepository(database, exercises)
     val updates = UpdateManager(appContext, settings)
     val sharing = ProgramShareRepository(database)
+    val body = BodyRepository(database.bodyDao())
 }

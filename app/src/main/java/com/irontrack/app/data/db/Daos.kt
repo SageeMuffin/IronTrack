@@ -307,6 +307,7 @@ interface BackupDao {
     @Query("SELECT * FROM workout_exercises") suspend fun workoutExercises(): List<WorkoutExerciseEntity>
     @Query("SELECT * FROM workout_sets") suspend fun workoutSets(): List<WorkoutSetEntity>
     @Query("SELECT * FROM reschedules") suspend fun reschedules(): List<RescheduleEntity>
+    @Query("SELECT * FROM body_measurements") suspend fun bodyMeasurements(): List<BodyMeasurementEntity>
 
     @Insert suspend fun insertExercises(l: List<ExerciseEntity>)
     @Insert suspend fun insertPrograms(l: List<ProgramEntity>)
@@ -317,6 +318,7 @@ interface BackupDao {
     @Insert suspend fun insertWorkoutExercises(l: List<WorkoutExerciseEntity>)
     @Insert suspend fun insertWorkoutSets(l: List<WorkoutSetEntity>)
     @Insert suspend fun insertReschedules(l: List<RescheduleEntity>)
+    @Insert suspend fun insertBodyMeasurements(l: List<BodyMeasurementEntity>)
 
     @Query("DELETE FROM workout_sets") suspend fun clearWorkoutSets()
     @Query("DELETE FROM workout_exercises") suspend fun clearWorkoutExercises()
@@ -327,4 +329,21 @@ interface BackupDao {
     @Query("DELETE FROM program_sessions") suspend fun clearSessions()
     @Query("DELETE FROM programs") suspend fun clearPrograms()
     @Query("DELETE FROM exercises") suspend fun clearExercises()
+    @Query("DELETE FROM body_measurements") suspend fun clearBodyMeasurements()
+}
+
+@Dao
+interface BodyDao {
+    @Query("SELECT * FROM body_measurements ORDER BY epochDay")
+    fun observeAll(): Flow<List<BodyMeasurementEntity>>
+
+    @Query("SELECT * FROM body_measurements WHERE metric = :metric ORDER BY epochDay")
+    fun observeMetric(metric: String): Flow<List<BodyMeasurementEntity>>
+
+    /** Remplace la valeur existante du même jour (index unique metric + epochDay). */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(m: BodyMeasurementEntity): Long
+
+    @Query("DELETE FROM body_measurements WHERE id = :id")
+    suspend fun delete(id: Long)
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -146,6 +147,31 @@ fun ProgramEditorScreen(nav: NavHostController, programId: Long) {
                 }
             }
             val weekSessions = p.sessions.filter { it.session.week == week || (!p.program.abEnabled && it.session.week == "A") }
+            fun LazyListScope.freeSection() {
+                val unscheduled = weekSessions.filter { it.session.dayOfWeek == null }
+                item(key = "unscheduled_$week") {
+                    SectionTitle(stringResource(R.string.unscheduled_sessions), trailing = {
+                        TextButton(onClick = { adding = 0 }) {
+                            Icon(Icons.Filled.Add, contentDescription = null)
+                            Text(stringResource(R.string.action_add_session))
+                        }
+                    })
+                    if (unscheduled.isEmpty()) {
+                        Text(stringResource(R.string.unscheduled_sessions_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    unscheduled.forEach { s ->
+                        SessionCard(s, p.program.abEnabled,
+                            onOpen = { nav.navigate(Routes.session(s.session.id)) },
+                            onToggle = { vm.toggleSession(s) },
+                            onCopyOtherWeek = { vm.copySession(s, if (s.session.week == "A") "B" else "A", null) },
+                            onDuplicate = { vm.copySession(s, s.session.week, null) },
+                            onDelete = { deleting = s })
+                    }
+                }
+            }
+            // Programme libre (aucune séance attribuée à un jour) : les séances sans jour passent en premier.
+            val freeFirst = weekSessions.isNotEmpty() && weekSessions.all { it.session.dayOfWeek == null }
+            if (freeFirst) freeSection()
             order.forEach { day ->
                 val list = weekSessions.filter { it.session.dayOfWeek == day }.sortedBy { it.session.timeOfDayMinutes ?: Int.MAX_VALUE }
                 item(key = "day_${week}_$day") {
@@ -168,26 +194,7 @@ fun ProgramEditorScreen(nav: NavHostController, programId: Long) {
                     }
                 }
             }
-            val unscheduled = weekSessions.filter { it.session.dayOfWeek == null }
-            item(key = "unscheduled_$week") {
-                SectionTitle(stringResource(R.string.unscheduled_sessions), trailing = {
-                    TextButton(onClick = { adding = 0 }) {
-                        Icon(Icons.Filled.Add, contentDescription = null)
-                        Text(stringResource(R.string.action_add_session))
-                    }
-                })
-                if (unscheduled.isEmpty()) {
-                    Text(stringResource(R.string.unscheduled_sessions_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                unscheduled.forEach { s ->
-                    SessionCard(s, p.program.abEnabled,
-                        onOpen = { nav.navigate(Routes.session(s.session.id)) },
-                        onToggle = { vm.toggleSession(s) },
-                        onCopyOtherWeek = { vm.copySession(s, if (s.session.week == "A") "B" else "A", null) },
-                        onDuplicate = { vm.copySession(s, s.session.week, null) },
-                        onDelete = { deleting = s })
-                }
-            }
+            if (!freeFirst) freeSection()
         }
 
         adding?.let { day ->

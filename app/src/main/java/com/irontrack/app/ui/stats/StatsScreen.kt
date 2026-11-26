@@ -96,6 +96,7 @@ fun StatsScreen(nav: NavHostController) {
                 Tab(tab == 0, { tab = 0 }, text = { Text(stringResource(R.string.tab_history)) })
                 Tab(tab == 1, { tab = 1 }, text = { Text(stringResource(R.string.tab_exercises)) })
                 Tab(tab == 2, { tab = 2 }, text = { Text(stringResource(R.string.tab_records)) })
+                Tab(tab == 3, { tab = 3 }, text = { Text(stringResource(R.string.tab_body)) })
             }
             when (tab) {
                 0 -> HistoryList(history, onOpen = { nav.navigate(Routes.workoutDetail(it)) })
@@ -109,6 +110,7 @@ fun StatsScreen(nav: NavHostController) {
                         HorizontalDivider()
                     }
                 }
+                3 -> BodyTab(nav)
                 else -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (records.isEmpty()) item { EmptyState(stringResource(R.string.stats_empty_title), stringResource(R.string.stats_empty_message)) }
                     items(records, key = { it.exerciseId }) { r -> RecordCard(r) { nav.navigate(Routes.exerciseStats(r.exerciseId)) } }

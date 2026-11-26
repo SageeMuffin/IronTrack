@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -83,6 +84,7 @@ import com.irontrack.app.ui.components.TimeOfDaySheet
 import com.irontrack.app.ui.components.ValueCell
 import com.irontrack.app.ui.components.WeightSheet
 import com.irontrack.app.ui.exercises.ExercisePickerDialog
+import com.irontrack.app.ui.navigation.Routes
 import com.irontrack.app.ui.weightText
 import com.irontrack.core.util.FrenchFormat
 import kotlinx.coroutines.flow.SharingStarted
@@ -105,6 +107,14 @@ class SessionEditorViewModel(private val c: AppContainer, private val app: andro
     fun addSet(seId: Long, copyOf: PlannedSetEntity? = null) = viewModelScope.launch { c.programs.addPlannedSet(seId, copyOf) }
     fun updateSet(s: PlannedSetEntity) = viewModelScope.launch { c.programs.updatePlannedSet(s) }
     fun removeSet(s: PlannedSetEntity) = viewModelScope.launch { c.programs.removePlannedSet(s) }
+
+    val inProgress = c.workouts.inProgress.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    /** Lance cette séance maintenant, quel que soit le jour prévu (séance hors calendrier). */
+    fun startNow(onStarted: (Long) -> Unit) = viewModelScope.launch {
+        val s = session.value?.session ?: return@launch
+        onStarted(c.workouts.startFromSession(s.id, null, s.week))
+    }
 
     /** Crée N séries vides d'un coup (aucune valeur inventée). */
     fun addEmptySets(seId: Long, n: Int) = viewModelScope.launch { repeat(n) { c.programs.addPlannedSet(seId) } }
@@ -136,12 +146,22 @@ fun SessionEditorScreen(nav: NavHostController, sessionId: Long) {
     var editingNotes by remember { mutableStateOf<SessionExerciseEntity?>(null) }
     var removing by remember { mutableStateOf<SessionExerciseFull?>(null) }
     var dayMenu by remember { mutableStateOf(false) }
+    var confirmStart by remember { mutableStateOf(false) }
+    val inProgress by vm.inProgress.collectAsStateWithLifecycle()
+    val startNow = { vm.startNow { id -> nav.navigate(Routes.workout(id)) } }
 
     val s = full
     AppScaffold(
         title = s?.session?.name ?: "",
         onBack = { nav.popBackStack() },
-        actions = { IconButton(onClick = { renaming = true }) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.action_rename)) } },
+        actions = {
+            if (s != null && s.exercises.isNotEmpty()) {
+                IconButton(onClick = { if (inProgress != null) confirmStart = true else startNow() }) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.action_start_this_session))
+                }
+            }
+            IconButton(onClick = { renaming = true }) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.action_rename)) }
+        },
     ) { padding ->
         if (s == null) return@AppScaffold
         val days = stringArrayResource(R.array.weekdays)
@@ -206,6 +226,15 @@ fun SessionEditorScreen(nav: NavHostController, sessionId: Long) {
         }
     }
 
+    if (confirmStart) {
+        ConfirmDialog(
+            title = stringResource(R.string.home_already_in_progress_title),
+            text = stringResource(R.string.home_already_in_progress_message),
+            confirmLabel = stringResource(R.string.action_start_anyway),
+            onConfirm = { confirmStart = false; startNow() },
+            onDismiss = { confirmStart = false },
+        )
+    }
     if (picking) {
         ExercisePickerDialog(onDismiss = { picking = false }, onPicked = { id -> picking = false; vm.addExercise(id) })
     }
