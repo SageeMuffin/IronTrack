@@ -9,6 +9,7 @@ IronTrack est une application Android native de planification et de suivi d'entr
 - Séance en cours : chronomètre, durée estimée, minuteur de repos, performances précédentes, séries ajoutées à la volée.
 - Calendrier mensuel et hebdomadaire, déplacement ou annulation d'une séance.
 - Historique, records personnels, graphiques de progression, comparaison estimé / réel.
+- **Suivi du corps** (Performances → Corps) : poids de corps, masse grasse et mensurations (cou, épaules, poitrine, taille, hanches, bras, avant-bras, cuisse, mollet), avec graphique d'évolution et écarts depuis la mesure précédente et depuis le début.
 - **Import intelligent** de programmes : texte collé, TXT, PDF (texte ou scanné), images JPG/PNG/WEBP/HEIC, photo. Aperçu complet et modifiable avant l'enregistrement, rien n'est inventé.
 - Export / restauration JSON, rappels de séance, thème sombre (par défaut), clair ou système.
 - Mises à jour intégrées depuis GitHub Releases, avec vérification de l'empreinte SHA-256 et de la signature.

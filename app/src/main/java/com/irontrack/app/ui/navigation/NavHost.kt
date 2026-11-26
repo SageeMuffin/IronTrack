@@ -41,6 +41,7 @@ import com.irontrack.app.ui.programs.ProgramEditorScreen
 import com.irontrack.app.ui.programs.ProgramsScreen
 import com.irontrack.app.ui.programs.SessionEditorScreen
 import com.irontrack.app.ui.settings.SettingsScreen
+import com.irontrack.app.ui.stats.BodyMetricScreen
 import com.irontrack.app.ui.stats.ExerciseStatsScreen
 import com.irontrack.app.ui.stats.StatsScreen
 import com.irontrack.app.ui.stats.WorkoutDetailScreen
@@ -60,12 +61,14 @@ object Routes {
     const val EXERCISES = "exercises"
     const val IMPORT = "import"
     const val ABOUT = "about"
+    const val BODY_METRIC = "body/{key}"
 
     fun program(id: Long) = "program/$id"
     fun session(id: Long) = "session/$id"
     fun workout(id: Long) = "workout/$id"
     fun workoutDetail(id: Long) = "workoutDetail/$id"
     fun exerciseStats(id: Long) = "exerciseStats/$id"
+    fun bodyMetric(key: String) = "body/$key"
 }
 
 private data class Tab(val route: String, val label: Int, val icon: ImageVector)
@@ -143,6 +146,9 @@ fun IronTrackNavHost() {
             composable(Routes.EXERCISES) { ExerciseLibraryScreen(nav) }
             composable(Routes.IMPORT) { ImportScreen(nav) }
             composable(Routes.ABOUT) { AboutScreen(nav) }
+            composable(Routes.BODY_METRIC, arguments = listOf(navArgument("key") { type = NavType.StringType })) {
+                BodyMetricScreen(nav, it.arguments!!.getString("key").orEmpty())
+            }
         }
     }
 }

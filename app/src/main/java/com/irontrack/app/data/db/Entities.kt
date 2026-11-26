@@ -204,3 +204,21 @@ data class RescheduleEntity(
     val newEpochDay: Long?,
     val newTimeMinutes: Int? = null,
 )
+
+/**
+ * Mesure corporelle (poids, tour de taille…). [metric] = clé stable de [com.irontrack.core.body.BodyMetric].
+ * Le poids est toujours stocké en kg, les tours en cm, la masse grasse en %.
+ * Une seule valeur par mesure et par jour : une nouvelle saisie le même jour remplace la précédente.
+ */
+@Serializable
+@Entity(
+    tableName = "body_measurements",
+    indices = [Index(value = ["metric", "epochDay"], unique = true)],
+)
+data class BodyMeasurementEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val metric: String,
+    val epochDay: Long,
+    val value: Double,
+    val createdAt: Long = System.currentTimeMillis(),
+)

@@ -3,6 +3,7 @@ package com.irontrack.app.data.repo
 import android.content.Context
 import android.net.Uri
 import androidx.room.withTransaction
+import com.irontrack.app.data.db.BodyMeasurementEntity
 import com.irontrack.app.data.db.ExerciseEntity
 import com.irontrack.app.data.db.IronTrackDatabase
 import com.irontrack.app.data.db.PlannedSetEntity
@@ -34,6 +35,8 @@ data class BackupFile(
     val workoutExercises: List<WorkoutExerciseEntity>,
     val workoutSets: List<WorkoutSetEntity>,
     val reschedules: List<RescheduleEntity>,
+    /** Absent des sauvegardes antérieures à la 1.1.0 : dans ce cas, les mesures existantes sont conservées. */
+    val bodyMeasurements: List<BodyMeasurementEntity>? = null,
 )
 
 class BackupManager(private val context: Context, private val db: IronTrackDatabase) {
@@ -49,6 +52,7 @@ class BackupManager(private val context: Context, private val db: IronTrackDatab
                 exercises = d.exercises(), programs = d.programs(), sessions = d.sessions(),
                 sessionExercises = d.sessionExercises(), plannedSets = d.plannedSets(), workouts = d.workouts(),
                 workoutExercises = d.workoutExercises(), workoutSets = d.workoutSets(), reschedules = d.reschedules(),
+                bodyMeasurements = d.bodyMeasurements(),
             )
         }
         context.contentResolver.openOutputStream(uri, "wt")?.use { it.write(json.encodeToString(BackupFile.serializer(), file).toByteArray()) }
@@ -70,6 +74,7 @@ class BackupManager(private val context: Context, private val db: IronTrackDatab
             d.insertSessionExercises(file.sessionExercises); d.insertPlannedSets(file.plannedSets)
             d.insertWorkouts(file.workouts); d.insertWorkoutExercises(file.workoutExercises)
             d.insertWorkoutSets(file.workoutSets); d.insertReschedules(file.reschedules)
+            file.bodyMeasurements?.let { d.clearBodyMeasurements(); d.insertBodyMeasurements(it) }
         }
         file.workouts.size
     }
